@@ -1,0 +1,75 @@
+﻿@page "/account/register"
+@inject IAccountService AccountService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+<div class="card">
+    <h4 class="card-header">Register</h4>
+    <div class="card-body">
+        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>First Name</label>
+                <InputText @bind-Value="model.FirstName" class="form-control" />
+                <ValidationMessage For="@(() => model.FirstName)" />
+            </div>
+            <div class="form-group">
+                <label>Last Name</label>
+                <InputText @bind-Value="model.LastName" class="form-control" />
+                <ValidationMessage For="@(() => model.LastName)" />
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <InputText @bind-Value="model.Username" class="form-control" />
+                <ValidationMessage For="@(() => model.Username)" />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <InputText @bind-Value="model.Password" type="password" class="form-control" />
+                <ValidationMessage For="@(() => model.Password)" />
+            </div>
+            <button disabled="@loading" class="btn btn-primary">
+                @if (loading) 
+                {
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Register
+            </button>
+            <NavLink href="account/login" class="btn btn-link">Cancel</NavLink>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private AddUser model = new AddUser();
+    private bool loading;
+
+    protected override void OnInitialized()
+    {
+        // redirect to home if already logged in
+        if (AccountService.User != null)
+        {
+            NavigationManager.NavigateTo("");
+        }
+    }
+
+    private async void OnValidSubmit()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        
+        loading = true;
+        try
+        {
+            await AccountService.Register(model);
+            AlertService.Success("Registration successful", keepAfterRouteChange: true);
+            NavigationManager.NavigateTo("account/login");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

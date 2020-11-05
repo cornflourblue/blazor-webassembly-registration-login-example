@@ -1,0 +1,11 @@
+﻿@page "/"
+@attribute [Authorize]
+@inject IAccountService AccountService
+
+<div class="p-4">
+    <div class="container">
+        <h1>Hi @AccountService.User.FirstName!</h1>
+        <p>You're logged in with Blazor WebAssembly!!</p>
+        <p><NavLink href="users">Manage Users</NavLink></p>
+    </div>
+</div>

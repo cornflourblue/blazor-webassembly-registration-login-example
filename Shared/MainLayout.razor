@@ -1,0 +1,27 @@
+﻿@inherits LayoutComponentBase
+@inject IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+@if (LoggedIn)
+{
+    <!-- nav -->
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+        <div class="navbar-nav">
+            <NavLink href="" Match="NavLinkMatch.All" class="nav-item nav-link">Home</NavLink>
+            <NavLink href="users" class="nav-item nav-link">Users</NavLink>
+            <NavLink href="account/logout" class="nav-item nav-link">Logout</NavLink>
+        </div>
+    </nav>
+}
+
+<div class="app-container @(LoggedIn ? "bg-light" : "")">
+    <Alert />
+    @Body
+</div>
+
+@code {
+    public bool LoggedIn 
+    {
+        get { return AccountService.User != null; }
+    }
+}

@@ -1,0 +1,87 @@
+﻿@page "/users/edit/{Id}"
+@attribute [Authorize]
+@inject IAlertService AlertService
+@inject IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+<h1>Edit User</h1>
+@if (model != null)
+{
+    <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <div class="form-row">
+            <div class="form-group col">
+                <label>First Name</label>
+                <InputText @bind-Value="model.FirstName" class="form-control" />
+                <ValidationMessage For="@(() => model.FirstName)" />
+            </div>
+            <div class="form-group col">
+                <label>Last Name</label>
+                <InputText @bind-Value="model.LastName" class="form-control" />
+                <ValidationMessage For="@(() => model.LastName)" />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col">
+                <label>Username</label>
+                <InputText @bind-Value="model.Username" class="form-control" />
+                <ValidationMessage For="@(() => model.Username)" />
+            </div>
+            <div class="form-group col">
+                <label>
+                    Password
+                    <em>(Leave blank to keep the same password)</em>
+                </label>
+                <InputText @bind-Value="model.Password" type="password" class="form-control" />
+                <ValidationMessage For="@(() => model.Password)" />
+            </div>
+        </div>
+        <div class="form-group">
+            <button disabled="@loading" class="btn btn-primary">
+                @if (loading) 
+                {
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Save
+            </button>
+            <NavLink href="users" class="btn btn-link">Cancel</NavLink>
+        </div>
+    </EditForm>
+}
+else
+{
+    <div class="text-center p-3">
+        <span class="spinner-border spinner-border-lg align-center"></span>
+    </div>
+}
+
+@code {
+    private EditUser model;
+    private bool loading;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await AccountService.GetById(Id);
+        model = new EditUser(user);
+    }
+
+    private async void OnValidSubmit()
+    {
+        loading = true;
+        try
+        {
+            await AccountService.Update(Id, model);
+            AlertService.Success("Update successful", keepAfterRouteChange: true);
+            NavigationManager.NavigateTo("users");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

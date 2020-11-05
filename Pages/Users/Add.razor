@@ -1,0 +1,66 @@
+﻿@page "/users/add"
+@attribute [Authorize]
+@inject IAlertService AlertService
+@inject IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+<h1>Add User</h1>
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-row">
+        <div class="form-group col">
+            <label>First Name</label>
+            <InputText @bind-Value="model.FirstName" class="form-control" />
+            <ValidationMessage For="@(() => model.FirstName)" />
+        </div>
+        <div class="form-group col">
+            <label>Last Name</label>
+            <InputText @bind-Value="model.LastName" class="form-control" />
+            <ValidationMessage For="@(() => model.LastName)" />
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col">
+            <label>Username</label>
+            <InputText @bind-Value="model.Username" class="form-control" />
+            <ValidationMessage For="@(() => model.Username)" />
+        </div>
+        <div class="form-group col">
+            <label>Password</label>
+            <InputText @bind-Value="model.Password" type="password" class="form-control" />
+            <ValidationMessage For="@(() => model.Password)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <button disabled="@loading" class="btn btn-primary">
+            @if (loading) 
+            {
+                <span class="spinner-border spinner-border-sm mr-1"></span>
+            }
+            Save
+        </button>
+        <NavLink href="users" class="btn btn-link">Cancel</NavLink>
+    </div>
+</EditForm>
+
+@code {
+    private AddUser model = new AddUser();
+    private bool loading;
+
+    private async void OnValidSubmit()
+    {
+        loading = true;
+        try
+        {
+            await AccountService.Register(model);
+            AlertService.Success("Registration successful", keepAfterRouteChange: true);
+            NavigationManager.NavigateTo("users");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}
