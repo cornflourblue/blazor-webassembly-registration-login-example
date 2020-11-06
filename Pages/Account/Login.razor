@@ -34,15 +34,6 @@
     private Models.Account.Login model = new Models.Account.Login();
     private bool loading;
 
-    protected override void OnInitialized()
-    {
-        // redirect to home if already logged in
-        if (AccountService.User != null)
-        {
-            NavigationManager.NavigateTo("");
-        }
-    }
-
     private async void OnValidSubmit()
     {
         // reset alerts on submit
