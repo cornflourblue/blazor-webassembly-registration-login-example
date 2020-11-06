@@ -53,7 +53,7 @@
         try
         {
             await AccountService.Register(model);
-            AlertService.Success("Registration successful", keepAfterRouteChange: true);
+            AlertService.Success("User added successfully", keepAfterRouteChange: true);
             NavigationManager.NavigateTo("users");
         }
         catch (Exception ex)
