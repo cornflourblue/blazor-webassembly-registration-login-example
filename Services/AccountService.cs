@@ -58,7 +58,7 @@ namespace BlazorApp.Services
 
         public async Task Register(AddUser model)
         {
-            await _httpService.Post<User>("/users/register", model);
+            await _httpService.Post("/users/register", model);
         }
 
         public async Task<IList<User>> GetAll()

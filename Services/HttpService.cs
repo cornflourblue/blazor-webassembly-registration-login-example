@@ -1,3 +1,4 @@
+using BlazorApp.Helpers;
 using BlazorApp.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
@@ -105,7 +106,7 @@ namespace BlazorApp.Services
             // auto logout on 401 response
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                _navigationManager.NavigateTo("logout");
+                _navigationManager.NavigateTo("account/logout");
                 return;
             }
 
@@ -122,13 +123,16 @@ namespace BlazorApp.Services
             // auto logout on 401 response
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                _navigationManager.NavigateTo("logout");
+                _navigationManager.NavigateTo("account/logout");
                 return default;
             }
 
             await handleErrors(response);
 
-            return await response.Content.ReadFromJsonAsync<T>();
+            var options = new JsonSerializerOptions();
+            options.PropertyNameCaseInsensitive = true;
+            options.Converters.Add(new StringConverter());
+            return await response.Content.ReadFromJsonAsync<T>(options);
         }
 
         private async Task addJwtHeader(HttpRequestMessage request)
